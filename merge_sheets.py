@@ -24,17 +24,20 @@ def workbook_to_dict(filename):
 def flatmap(f, items):
     return chain.from_iterable(map(f, items))
 
+def wb_data_to_stdout(wb_data, headers=None):
+    if headers is None:
+        # Get the full list of headers
+        headers = sorted(set.union(*map(lambda x: set(x), wb_data)))
+
+    # Write data to stdout
+    dict_writer = csv.DictWriter(sys.stdout, headers)
+    dict_writer.writeheader()
+    dict_writer.writerows(wb_data)
+
 if __name__ == '__main__':
     if len(sys.argv) < 2:
         sys.exit(1)
 
     workbook_data = list(flatmap(workbook_to_dict, sys.argv[1:]))
-
-    # Get the full list of headers
-    csv_headers = set.union(*map(lambda x: set(x), workbook_data))
-
-    # Write data to stdout
-    dict_writer = csv.DictWriter(sys.stdout, sorted(csv_headers))
-    dict_writer.writeheader()
-    dict_writer.writerows(workbook_data)
+    write_to_stdout(workbook_data)
 
