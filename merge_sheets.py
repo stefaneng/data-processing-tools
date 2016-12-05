@@ -8,9 +8,6 @@ from itertools import chain
 # flatmap from http://www.markhneedham.com/blog/2015/03/23/python-equivalent-to-flatmap-for-flattening-an-array-of-arrays/
 # Modified for python 3
 
-if len(sys.argv) < 2:
-    sys.exit(1)
-
 def workbook_to_dict(filename):
     wb = open_workbook(filename)
 
@@ -27,13 +24,17 @@ def workbook_to_dict(filename):
 def flatmap(f, items):
     return chain.from_iterable(map(f, items))
 
-workbook_data = list(flatmap(workbook_to_dict, sys.argv[1:]))
+if __name__ == '__main__':
+    if len(sys.argv) < 2:
+        sys.exit(1)
 
-# Get the full list of headers
-csv_headers = set.union(*map(lambda x: set(x), workbook_data))
+    workbook_data = list(flatmap(workbook_to_dict, sys.argv[1:]))
 
-# Write data to stdout
-dict_writer = csv.DictWriter(sys.stdout, sorted(csv_headers))
-dict_writer.writeheader()
-dict_writer.writerows(workbook_data)
+    # Get the full list of headers
+    csv_headers = set.union(*map(lambda x: set(x), workbook_data))
+
+    # Write data to stdout
+    dict_writer = csv.DictWriter(sys.stdout, sorted(csv_headers))
+    dict_writer.writeheader()
+    dict_writer.writerows(workbook_data)
 
